@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ? $title . ' · ' : '' }}{{ config('app.name') }}</title>
+       <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
     {{-- Keeps Alpine-controlled elements (menus, footer pop-ups) hidden until Alpine has started --}}
     <style>
@@ -51,7 +52,7 @@
         <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Main navigation">
             {{-- Header logo (public/images/logo.png) --}}
             <a href="{{ route('home') }}" aria-label="{{ config('app.name') }} home" class="flex shrink-0 items-center">
-                <img src="{{ asset('images/logo.png') }}" alt="{{ config('app.name') }} logo" class="-my-2 h-14 w-auto max-w-[220px] object-contain">
+                <img src="{{ asset('images/shxn.png') }}" alt="{{ config('app.name') }} logo" class="-my-2 h-14 w-auto max-w-[220px] object-contain">
             </a>
 
             {{-- Desktop links --}}
