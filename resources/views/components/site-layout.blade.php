@@ -13,6 +13,57 @@
     <style>
         [x-cloak] { display: none !important; }
 
+        /* Dark gradient page background (plain CSS so it works even if Tailwind hasn't been rebuilt) */
+        .site-body {
+            background:
+                radial-gradient(60rem 30rem at 50% -10%, rgba(79, 70, 229, 0.18), transparent 60%),
+                radial-gradient(40rem 25rem at 100% 100%, rgba(192, 38, 211, 0.10), transparent 60%),
+                linear-gradient(135deg, #020617 0%, #0f172a 55%, #1e1b4b 100%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+        }
+
+        /* Transparent header with no border */
+        /* Glassmorphic header */
+        .site-header {
+            background: rgba(3, 5, 11, 0.72);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .site-header .nav-link { color: #cbd5e1; }
+        .site-header .nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+
+        .site-header .nav-account-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0;
+        }
+        .site-header .nav-account-btn:hover { background: rgba(255, 255, 255, 0.12); }
+        .site-header .nav-account-btn svg { color: #94a3b8; }
+
+        .site-header .nav-menu {
+            background: #0b0f1c;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+        }
+        .site-header .nav-menu a,
+        .site-header .nav-menu button { color: #cbd5e1; }
+        .site-header .nav-menu a:hover,
+        .site-header .nav-menu button:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+
+        .site-header .nav-toggle { color: #cbd5e1; }
+        .site-header .nav-toggle:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+
+        .site-header .nav-mobile {
+            background: #070a14;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .site-header .nav-mobile a,
+        .site-header .nav-mobile button { color: #cbd5e1; }
+        .site-header .nav-mobile a:hover,
+        .site-header .nav-mobile button:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+
         /* Footer layout (plain CSS so it works even if Tailwind hasn't been rebuilt) */
         .footer-grid { display: grid; gap: 2.5rem; grid-template-columns: 1fr; }
         @media (min-width: 640px)  { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -39,16 +90,22 @@
         .site-footer .footer-team-list li { display: flex; align-items: center; gap: 0.625rem; }
         .site-footer .footer-team-list li::before { content: ""; width: 6px; height: 6px; border-radius: 9999px; background: #818cf8; flex-shrink: 0; }
     </style>
-
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Optional per-page head content (the homepage uses this for its 3D background) --}}
+    @stack('head')
 </head>
-<body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
+<body class="site-body min-h-screen font-sans antialiased">
+
+{{-- Optional per-page background layer, sits behind everything (empty on most pages) --}}
+@stack('background')
+
 <div class="flex min-h-screen flex-col">
 
     {{-- Top navigation with a mobile menu --}}
-    <header x-data="{ open: false }" class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+    <header x-data="{ open: false }" class="site-header sticky top-0 z-40">
         <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Main navigation">
             {{-- Header logo (public/images/logo.png) --}}
             <a href="{{ route('home') }}" aria-label="{{ config('app.name') }} home" class="flex shrink-0 items-center">
@@ -57,68 +114,68 @@
 
             {{-- Desktop links --}}
             <div class="hidden items-center gap-1 md:flex">
-                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">Home</a>
-                <a href="{{ route('templates.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">Templates</a>
+                <a href="{{ route('home') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">Home</a>
+                <a href="{{ route('templates.index') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">Templates</a>
                 @auth
-                    <a href="{{ route('portfolios.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">My Portfolios</a>
-                    <a href="{{ route('portfolios.create') }}" class="ml-2 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:shadow-md hover:brightness-110">
+                    <a href="{{ route('portfolios.index') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">My Portfolios</a>
+                    <a href="{{ route('portfolios.create') }}" class="ml-2 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:shadow-md hover:brightness-110">
                         <x-icon name="plus" class="h-4 w-4" /> Create
                     </a>
 
                     {{-- Account dropdown --}}
                     <div x-data="{ menu: false }" @click.outside="menu = false" class="relative ml-2">
-                        <button type="button" @click="menu = !menu" class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50" :aria-expanded="menu">
+                        <button type="button" @click="menu = !menu" class="nav-account-btn flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition" :aria-expanded="menu">
                             {{ auth()->user()->name }}
-                            <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
                         </button>
-                        <div x-show="menu" x-cloak x-transition class="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
-                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Account settings</a>
+                        <div x-show="menu" x-cloak x-transition class="nav-menu absolute right-0 mt-2 w-48 overflow-hidden rounded-xl py-1">
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm">Account settings</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">Log out</button>
+                                <button type="submit" class="block w-full px-4 py-2 text-left text-sm">Log out</button>
                             </form>
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">Log in</a>
-                    <a href="{{ route('register') }}" class="ml-1 inline-flex items-center rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:shadow-md hover:brightness-110">Get started</a>
+                    <a href="{{ route('login') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">Log in</a>
+                    <a href="{{ route('register') }}" class="ml-1 inline-flex items-center rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:shadow-md hover:brightness-110">Get started</a>
                 @endauth
             </div>
 
             {{-- Mobile menu button --}}
-            <button type="button" @click="open = !open" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 md:hidden" :aria-expanded="open" aria-label="Toggle menu">
+            <button type="button" @click="open = !open" class="nav-toggle rounded-lg p-2 md:hidden" :aria-expanded="open" aria-label="Toggle menu">
                 <x-icon name="x-mark" class="h-6 w-6" x-show="open" x-cloak />
                 <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
             </button>
         </nav>
 
         {{-- Mobile links --}}
-        <div x-show="open" x-cloak x-transition class="border-t border-slate-200 bg-white px-4 py-3 md:hidden">
+        <div x-show="open" x-cloak x-transition class="nav-mobile px-4 py-3 md:hidden">
             <div class="flex flex-col gap-1">
-                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Home</a>
-                <a href="{{ route('templates.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Templates</a>
+                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Home</a>
+                <a href="{{ route('templates.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Templates</a>
                 @auth
-                    <a href="{{ route('portfolios.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">My Portfolios</a>
-                    <a href="{{ route('portfolios.create') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Create Portfolio</a>
-                    <a href="{{ route('profile.edit') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Account settings</a>
+                    <a href="{{ route('portfolios.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium">My Portfolios</a>
+                    <a href="{{ route('portfolios.create') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Create Portfolio</a>
+                    <a href="{{ route('profile.edit') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Account settings</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-100">Log out</button>
+                        <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium">Log out</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Log in</a>
-                    <a href="{{ route('register') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Register</a>
+                    <a href="{{ route('login') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Log in</a>
+                    <a href="{{ route('register') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Register</a>
                 @endauth
             </div>
         </div>
     </header>
 
-    {{-- Flash message shown after saving, updating, or deleting --}}
+   {{-- Flash message shown after saving, updating, or deleting --}}
     @if (session('status'))
         <div x-data="{ show: true }" x-show="show" x-transition class="mx-auto mt-4 w-full max-w-6xl px-4 sm:px-6 lg:px-8" role="status">
-            <div class="flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div style="background-color: #064e3b !important; border: 1px solid #10b981 !important; color: #ecfdf5 !important;" class="flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-lg">
                 <span>{{ session('status') }}</span>
-                <button type="button" @click="show = false" class="text-emerald-700 hover:text-emerald-900" aria-label="Dismiss"><x-icon name="x-mark" class="h-4 w-4" /></button>
+                <button type="button" @click="show = false" style="color: #6ee7b7;" aria-label="Dismiss"><x-icon name="x-mark" class="h-4 w-4" /></button>
             </div>
         </div>
     @endif

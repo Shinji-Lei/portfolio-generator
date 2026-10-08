@@ -2,10 +2,10 @@
 @props(['title', 'rows', 'blank', 'addLabel'])
 <div x-data="repeater(@js($rows), @js($blank))" class="space-y-4">
     <template x-for="(row, i) in rows" :key="row._k">
-        <div class="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 sm:p-5">
+        <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-4 sm:p-5">
             <div class="mb-3 flex items-center justify-between">
-                <p class="text-sm font-semibold text-slate-700">{{ $title }} <span x-text="i + 1"></span></p>
-                <button type="button" @click="remove(i)" class="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-rose-600 transition hover:bg-rose-50">
+                <p class="text-sm font-semibold text-slate-200">{{ $title }} <span x-text="i + 1"></span></p>
+                <button type="button" @click="remove(i)" class="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-rose-400 transition hover:bg-rose-500/10 hover:text-rose-300">
                     <x-icon name="trash" class="h-4 w-4" /> Remove
                 </button>
             </div>
@@ -13,7 +13,7 @@
         </div>
     </template>
 
-    <button type="button" @click="add()" class="inline-flex items-center gap-2 rounded-xl border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50">
+    <button type="button" @click="add()" class="inline-flex items-center gap-2 rounded-xl border border-dashed border-violet-400/40 px-4 py-2 text-sm font-medium text-violet-300 transition hover:border-violet-400 hover:bg-violet-500/10 hover:text-violet-200">
         <x-icon name="plus" class="h-4 w-4" /> {{ $addLabel }}
     </button>
 </div>
