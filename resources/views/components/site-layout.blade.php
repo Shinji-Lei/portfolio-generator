@@ -84,6 +84,13 @@
         @media (min-width: 1024px) { .footer-grid { grid-template-columns: 7fr 5fr; } }
         .footer-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1.5rem; list-style: none; margin: 0; padding: 0; }
 
+        /* Follow Us starts at the same left edge as "Terms & Conditions" (desktop only) */
+        @media (min-width: 1024px) {
+            .footer-aside { width: 8rem; }
+            .footer-legal { flex-wrap: nowrap; justify-content: flex-end; gap: 1.5rem; }
+            .footer-legal li:last-child { width: 8rem; }
+        }
+
         /* Dark footer (plain CSS; scoped so the Privacy/Terms pop-up stays white) */
         .site-footer { background: #0f172a; border-top: 1px solid #1e293b; }
         .site-footer .footer-inner { padding-top: 1.25rem; padding-bottom: 0.75rem; }
@@ -158,7 +165,7 @@
                     </div>
                 @else
                     <a href="{{ route('login') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">Log in</a>
-                    <a href="{{ route('register') }}" class="ml-1 inline-flex items-center rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:shadow-md hover:brightness-110">Get started</a>
+                    <a href="{{ route('register') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">Get started</a>
                 @endauth
             </div>
 
@@ -251,31 +258,36 @@
                     <p class="mt-2 max-w-md text-sm leading-6 text-slate-600">{{ $footer['about'] }}</p>
                 </div>
 
-                {{-- Contact information + social links --}}
+                {{-- Contact information + social links (headings in one row) --}}
                 <div id="contact-info">
-                    <h3 class="text-sm font-semibold text-slate-900">Contact Information</h3>
-                    <div class="mt-3 flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
-                        <ul class="footer-contact space-y-2 text-sm text-slate-600">
-                            @foreach (['email' => $footer['email'], 'phone' => $footer['phone'], 'address' => $footer['address']] as $type => $value)
-                                <li class="flex items-start gap-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $contactIcons[$type] }}" /></svg>
-                                    <span>
-                                        <span class="sr-only">{{ ucfirst($type) }}: </span>
-                                        @if ($type === 'email')
-                                            <a href="mailto:{{ $value }}" class="break-all transition hover:text-indigo-600">{{ $value }}</a>
-                                        @elseif ($type === 'phone')
-                                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $value) }}" class="transition hover:text-indigo-600">{{ $value }}</a>
-                                        @else
-                                            {{ $value }}
-                                        @endif
-                                    </span>
-                                </li>
-                            @endforeach
-                        </ul>
+                    <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
 
+                        {{-- Left: Contact Information --}}
                         <div>
+                            <h3 class="text-sm font-semibold text-slate-900">Contact Information</h3>
+                            <ul class="footer-contact mt-3 space-y-2 text-sm text-slate-600">
+                                @foreach (['email' => $footer['email'], 'phone' => $footer['phone'], 'address' => $footer['address']] as $type => $value)
+                                    <li class="flex items-start gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $contactIcons[$type] }}" /></svg>
+                                        <span>
+                                            <span class="sr-only">{{ ucfirst($type) }}: </span>
+                                            @if ($type === 'email')
+                                                <a href="mailto:{{ $value }}" class="break-all transition hover:text-indigo-600">{{ $value }}</a>
+                                            @elseif ($type === 'phone')
+                                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $value) }}" class="transition hover:text-indigo-600">{{ $value }}</a>
+                                            @else
+                                                {{ $value }}
+                                            @endif
+                                        </span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        {{-- Right: Follow Us --}}
+                        <div class="footer-aside">
                             <h3 class="text-sm font-semibold text-slate-900">Follow Us</h3>
-                            <ul class="footer-social mt-2 flex gap-2">
+                            <ul class="footer-social mt-3 flex gap-2">
                                 @foreach ($footer['social'] as $network => $url)
                                     <li>
                                         <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $network }}"
@@ -296,6 +308,7 @@
                                 @endforeach
                             </ul>
                         </div>
+
                     </div>
                 </div>
             </div>
