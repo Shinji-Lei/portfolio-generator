@@ -68,9 +68,13 @@
     @endpush
 
     <section class="gallery-page mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+
+        {{-- Progress steps: Step 1 = Preview template --}}
+        <x-steps :current="1" />
+
         <div class="mx-auto max-w-2xl text-center">
             <h1 class="gallery-title text-4xl font-extrabold tracking-tight">Choose your style</h1>
-            <p class="gallery-lead mt-3">Three templates, each with a distinct look. Preview them with sample data, then use your own details.</p>
+            <p class="gallery-lead mt-3">Three templates, each with a distinct look. Preview them with sample data, then select the one you like.</p>
         </div>
 
         <div class="mt-12 grid gap-6 md:grid-cols-3">
@@ -85,12 +89,13 @@
                         <a href="{{ route('templates.demo', $key) }}" class="gallery-btn-ghost inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold">
                             <x-icon name="eye" class="h-4 w-4" /> Preview
                         </a>
-                        <a href="{{ route('portfolios.create') }}" class="gallery-btn-solid inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold">Select</a>
+                        {{-- Carries the chosen template to the information form --}}
+                        <a href="{{ route('portfolios.create', ['template' => $key]) }}" class="gallery-btn-solid inline-flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold">Select</a>
                     </div>
                 </article>
             @endforeach
         </div>
 
-        <p class="gallery-note mt-8 text-center text-sm">You pick the final template after entering your information.</p>
+        <p class="gallery-note mt-8 text-center text-sm">Your chosen template is applied after you enter your information. You can change it later.</p>
     </section>
 </x-site-layout>

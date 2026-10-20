@@ -31,8 +31,21 @@
             backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .site-header .nav-link { color: #cbd5e1; }
+        .site-header .nav-link { color: #cbd5e1; position: relative; }
         .site-header .nav-link:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+
+        /* Current page: white text, soft background, and a gradient underline */
+        .site-header .nav-link.is-active { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+        .site-header .nav-link.is-active::after {
+            content: "";
+            position: absolute;
+            left: 0.75rem;
+            right: 0.75rem;
+            bottom: 0.2rem;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #818cf8, #c084fc);
+        }
 
         .site-header .nav-account-btn {
             background: rgba(255, 255, 255, 0.06);
@@ -63,15 +76,18 @@
         .site-header .nav-mobile button { color: #cbd5e1; }
         .site-header .nav-mobile a:hover,
         .site-header .nav-mobile button:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+        .site-header .nav-mobile a.is-active { background: rgba(99, 102, 241, 0.2); color: #ffffff; }
 
         /* Footer layout (plain CSS so it works even if Tailwind hasn't been rebuilt) */
-        .footer-grid { display: grid; gap: 2.5rem; grid-template-columns: 1fr; }
+        .footer-grid { display: grid; gap: 1.5rem 2.5rem; grid-template-columns: 1fr; }
         @media (min-width: 640px)  { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .footer-grid { grid-template-columns: 5fr 3fr 4fr; } }
+        @media (min-width: 1024px) { .footer-grid { grid-template-columns: 7fr 5fr; } }
         .footer-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1.5rem; list-style: none; margin: 0; padding: 0; }
 
         /* Dark footer (plain CSS; scoped so the Privacy/Terms pop-up stays white) */
         .site-footer { background: #0f172a; border-top: 1px solid #1e293b; }
+        .site-footer .footer-inner { padding-top: 1.25rem; padding-bottom: 0.75rem; }
+        .site-footer .footer-logo { height: 2.5rem; }
         .site-footer .footer-grid h3 { color: #ffffff; }
         .site-footer .footer-grid p,
         .site-footer .footer-grid ul { color: #94a3b8; }
@@ -80,13 +96,13 @@
         .site-footer .footer-grid .footer-social a { border-color: #334155; }
         .site-footer .footer-grid .footer-social a:hover { border-color: #818cf8; color: #a5b4fc; }
         .site-footer .footer-contact svg { color: #818cf8; }
-        .site-footer .footer-bottom { border-top-color: #1e293b; color: #94a3b8; }
+        .site-footer .footer-bottom { border-top-color: #1e293b; color: #94a3b8; margin-top: 0.75rem; padding-top: 0.75rem; }
         .site-footer .footer-bottom button:hover { color: #a5b4fc; }
 
         /* Team / group members */
-        .site-footer .footer-team { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #1e293b; }
+        .site-footer .footer-team { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #1e293b; }
         .site-footer .footer-team h3 { color: #ffffff; font-size: 0.875rem; font-weight: 600; margin: 0; }
-        .site-footer .footer-team-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem 1.5rem; list-style: none; margin: 1rem 0 0; padding: 0; font-size: 0.875rem; color: #94a3b8; }
+        .site-footer .footer-team-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.35rem 1.5rem; list-style: none; margin: 0.5rem 0 0; padding: 0; font-size: 0.875rem; color: #94a3b8; }
         .site-footer .footer-team-list li { display: flex; align-items: center; gap: 0.625rem; }
         .site-footer .footer-team-list li::before { content: ""; width: 6px; height: 6px; border-radius: 9999px; background: #818cf8; flex-shrink: 0; }
     </style>
@@ -104,6 +120,13 @@
 
 <div class="flex min-h-screen flex-col">
 
+    @php
+        // Which page we are on, so the matching nav link can be highlighted
+        $isHome       = request()->routeIs('home');
+        $isTemplates  = request()->routeIs('templates.*');
+        $isPortfolios = request()->routeIs('portfolios.*');
+    @endphp
+
     {{-- Top navigation with a mobile menu --}}
     <header x-data="{ open: false }" class="site-header sticky top-0 z-40">
         <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8" aria-label="Main navigation">
@@ -114,13 +137,10 @@
 
             {{-- Desktop links --}}
             <div class="hidden items-center gap-1 md:flex">
-                <a href="{{ route('home') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">Home</a>
-                <a href="{{ route('templates.index') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">Templates</a>
+                <a href="{{ route('home') }}" class="nav-link {{ $isHome ? 'is-active' : '' }} rounded-lg px-3 py-2 text-sm font-medium transition" @if ($isHome) aria-current="page" @endif>Home</a>
+                <a href="{{ route('templates.index') }}" class="nav-link {{ $isTemplates ? 'is-active' : '' }} rounded-lg px-3 py-2 text-sm font-medium transition" @if ($isTemplates) aria-current="page" @endif>Templates</a>
                 @auth
-                    <a href="{{ route('portfolios.index') }}" class="nav-link rounded-lg px-3 py-2 text-sm font-medium transition">My Portfolios</a>
-                    <a href="{{ route('portfolios.create') }}" class="ml-2 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition hover:shadow-md hover:brightness-110">
-                        <x-icon name="plus" class="h-4 w-4" /> Create
-                    </a>
+                    <a href="{{ route('portfolios.index') }}" class="nav-link {{ $isPortfolios ? 'is-active' : '' }} rounded-lg px-3 py-2 text-sm font-medium transition" @if ($isPortfolios) aria-current="page" @endif>My Portfolios</a>
 
                     {{-- Account dropdown --}}
                     <div x-data="{ menu: false }" @click.outside="menu = false" class="relative ml-2">
@@ -152,10 +172,10 @@
         {{-- Mobile links --}}
         <div x-show="open" x-cloak x-transition class="nav-mobile px-4 py-3 md:hidden">
             <div class="flex flex-col gap-1">
-                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Home</a>
-                <a href="{{ route('templates.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Templates</a>
+                <a href="{{ route('home') }}" class="{{ $isHome ? 'is-active' : '' }} rounded-lg px-3 py-2 text-sm font-medium" @if ($isHome) aria-current="page" @endif>Home</a>
+                <a href="{{ route('templates.index') }}" class="{{ $isTemplates ? 'is-active' : '' }} rounded-lg px-3 py-2 text-sm font-medium" @if ($isTemplates) aria-current="page" @endif>Templates</a>
                 @auth
-                    <a href="{{ route('portfolios.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium">My Portfolios</a>
+                    <a href="{{ route('portfolios.index') }}" class="{{ $isPortfolios ? 'is-active' : '' }} rounded-lg px-3 py-2 text-sm font-medium" @if ($isPortfolios) aria-current="page" @endif>My Portfolios</a>
                     <a href="{{ route('portfolios.create') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Create Portfolio</a>
                     <a href="{{ route('profile.edit') }}" class="rounded-lg px-3 py-2 text-sm font-medium">Account settings</a>
                     <form method="POST" action="{{ route('logout') }}">
@@ -218,72 +238,65 @@
             aria-labelledby="footer-heading" class="site-footer">
         <h2 id="footer-heading" class="sr-only">Footer</h2>
 
-        <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="footer-inner mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div class="footer-grid">
 
-                {{-- Logo, website name, about us, and social media --}}
+                {{-- Logo, website name, and about us --}}
                 <div id="about-us">
                     {{-- Footer logo (public/images/logo.png) --}}
                     <a href="{{ route('home') }}" aria-label="{{ config('app.name') }} home" class="inline-flex items-center">
-                        <img src="{{ asset('images/logo.png') }}" alt="{{ config('app.name') }} logo" class="h-16 w-auto max-w-[240px] object-contain" style="filter: brightness(0) invert(1);">
+                        <img src="{{ asset('images/logo.png') }}" alt="{{ config('app.name') }} logo" class="footer-logo w-auto max-w-[240px] object-contain" style="filter: brightness(0) invert(1);">
                     </a>
-                    <h3 class="mt-6 text-sm font-semibold text-slate-900">About Us</h3>
+                    <h3 class="mt-3 text-sm font-semibold text-slate-900">About Us</h3>
                     <p class="mt-2 max-w-md text-sm leading-6 text-slate-600">{{ $footer['about'] }}</p>
-
-                    <h3 class="mt-6 text-sm font-semibold text-slate-900">Follow Us</h3>
-                    <ul class="footer-social mt-3 flex gap-2">
-                        @foreach ($footer['social'] as $network => $url)
-                            <li>
-                                <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $network }}"
-                                   class="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
-                                        @if ($network === 'Facebook')
-                                            <path d="M7 10v4h3v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3V3h-3a5 5 0 0 0-5 5v2H7" />
-                                        @elseif ($network === 'Instagram')
-                                            <rect x="4" y="4" width="16" height="16" rx="4" />
-                                            <circle cx="12" cy="12" r="3" />
-                                            <line x1="16.5" y1="7.5" x2="16.5" y2="7.501" />
-                                        @elseif ($network === 'TikTok')
-                                            <path d="M21 7.917v4.034a9.948 9.948 0 0 1-5-1.951v4.5a6.5 6.5 0 1 1-8-6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917z" />
-                                        @endif
-                                    </svg>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
                 </div>
 
-                {{-- Quick links --}}
-                <nav aria-label="Quick links">
-                    <h3 class="text-sm font-semibold text-slate-900">Quick Links</h3>
-                    <ul class="mt-4 space-y-3 text-sm text-slate-600">
-                        <li><a href="{{ route('home') }}" class="transition hover:text-indigo-600">Home</a></li>
-                        <li><a href="#about-us" class="transition hover:text-indigo-600">About</a></li>
-                        <li><a href="{{ route('templates.index') }}" class="transition hover:text-indigo-600">Templates</a></li>
-                        <li><a href="#contact-info" class="transition hover:text-indigo-600">Contact</a></li>
-                    </ul>
-                </nav>
-
-                {{-- Contact information --}}
+                {{-- Contact information + social links --}}
                 <div id="contact-info">
                     <h3 class="text-sm font-semibold text-slate-900">Contact Information</h3>
-                    <ul class="footer-contact mt-4 space-y-3 text-sm text-slate-600">
-                        @foreach (['email' => $footer['email'], 'phone' => $footer['phone'], 'address' => $footer['address']] as $type => $value)
-                            <li class="flex items-start gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $contactIcons[$type] }}" /></svg>
-                                <span>
-                                    <span class="sr-only">{{ ucfirst($type) }}: </span>
-                                    @if ($type === 'email')
-                                        <a href="mailto:{{ $value }}" class="break-all transition hover:text-indigo-600">{{ $value }}</a>
-                                    @elseif ($type === 'phone')
-                                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $value) }}" class="transition hover:text-indigo-600">{{ $value }}</a>
-                                    @else
-                                        {{ $value }}
-                                    @endif
-                                </span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <div class="mt-3 flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+                        <ul class="footer-contact space-y-2 text-sm text-slate-600">
+                            @foreach (['email' => $footer['email'], 'phone' => $footer['phone'], 'address' => $footer['address']] as $type => $value)
+                                <li class="flex items-start gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $contactIcons[$type] }}" /></svg>
+                                    <span>
+                                        <span class="sr-only">{{ ucfirst($type) }}: </span>
+                                        @if ($type === 'email')
+                                            <a href="mailto:{{ $value }}" class="break-all transition hover:text-indigo-600">{{ $value }}</a>
+                                        @elseif ($type === 'phone')
+                                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $value) }}" class="transition hover:text-indigo-600">{{ $value }}</a>
+                                        @else
+                                            {{ $value }}
+                                        @endif
+                                    </span>
+                                </li>
+                            @endforeach
+                        </ul>
+
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-900">Follow Us</h3>
+                            <ul class="footer-social mt-2 flex gap-2">
+                                @foreach ($footer['social'] as $network => $url)
+                                    <li>
+                                        <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $network }}"
+                                           class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
+                                                @if ($network === 'Facebook')
+                                                    <path d="M7 10v4h3v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3V3h-3a5 5 0 0 0-5 5v2H7" />
+                                                @elseif ($network === 'Instagram')
+                                                    <rect x="4" y="4" width="16" height="16" rx="4" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                    <line x1="16.5" y1="7.5" x2="16.5" y2="7.501" />
+                                                @elseif ($network === 'TikTok')
+                                                    <path d="M21 7.917v4.034a9.948 9.948 0 0 1-5-1.951v4.5a6.5 6.5 0 1 1-8-6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917z" />
+                                                @endif
+                                            </svg>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
 

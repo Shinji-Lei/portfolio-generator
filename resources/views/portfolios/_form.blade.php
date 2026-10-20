@@ -1,4 +1,5 @@
-{{-- Shared create/edit form. Expects: $portfolio, $action, $method, $resetUrl --}}
+{{-- Shared create/edit form. Expects: $portfolio, $action, $method, $resetUrl
+     Optional: $chosenTemplate (template key picked on the gallery page; only passed from create) --}}
 @php
     // Build the starting rows for each repeater: old input first, then saved data, then one blank row
     $blankEducation  = ['school' => '', 'degree' => '', 'year_started' => '', 'year_graduated' => ''];
@@ -25,11 +26,22 @@
     @csrf
     @if ($method !== 'POST') @method($method) @endif
 
-    {{-- All validation errors in one place --}}
+    {{-- Template picked on the gallery page (create flow only) --}}
+    @if (! empty($chosenTemplate))
+        <input type="hidden" name="selected_template" value="{{ $chosenTemplate }}">
+    @endif
+
+    {{-- All validation errors in one place (red) --}}
     @if ($errors->any())
-        <div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200" role="alert">
-            <p class="font-semibold text-rose-100">Please fix the following:</p>
-            <ul class="mt-2 list-disc space-y-1 pl-5 marker:text-rose-400">
+        <div role="alert"
+             style="background: rgba(239, 68, 68, 0.12);
+                    border: 1px solid rgba(248, 113, 113, 0.70);
+                    border-radius: 16px;
+                    padding: 16px 20px;
+                    color: #fecaca;
+                    font-size: 0.875rem;">
+            <p style="font-weight: 600; color: #f87171;">Please fix the following:</p>
+            <ul style="margin-top: 8px; list-style: disc; padding-left: 20px;">
                 @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
             </ul>
         </div>
@@ -160,7 +172,8 @@
                 class="rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
             Reset Form
         </button>
-        <button type="submit" :disabled="loading" :class="loading ? 'opacity-70 cursor-wait' : 'hover:shadow-lg hover:shadow-violet-700/40 hover:brightness-110'"
+        <button type="submit" :disabled="loading" :class="loading ? 'opacity-70 cursor-wait' : 'hover:shadow-lg hover:shadow-green-700/40 hover:brightness-110'"
+                style="border: 1px solid #22c55e;"
                 class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-8 py-3 text-sm font-semibold text-white shadow-md shadow-violet-900/40 transition">
             <svg x-show="loading" x-cloak class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/><path fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4Z" class="opacity-75"/></svg>
             <span x-text="loading ? 'Saving...' : 'Save Portfolio'">Save Portfolio</span>
@@ -191,6 +204,20 @@
             },
             remove(i) { this.skills.splice(i, 1); },
         }));
+    });
+
+    // Full name: letters only (plus spaces, apostrophes, periods and hyphens for real names)
+    document.addEventListener('DOMContentLoaded', () => {
+        const nameInput = document.querySelector('input[name="full_name"]');
+        if (!nameInput) return;
+
+        const clean = () => {
+            const cleaned = nameInput.value.replace(/[^\p{L}\s'.\-]/gu, '');
+            if (cleaned !== nameInput.value) nameInput.value = cleaned;
+        };
+
+        nameInput.addEventListener('input', clean);
+        clean();
     });
 </script>
 @endpush

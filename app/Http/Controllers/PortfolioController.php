@@ -34,27 +34,41 @@ class PortfolioController extends Controller
     }
 
     // Shows the empty portfolio form
-    public function create(): View
-    {
-        Gate::authorize('create', Portfolio::class);
+  // Shows the empty portfolio form (step 2). A template must be chosen first (step 1)
+public function create(Request $request): View|RedirectResponse
+{
+    Gate::authorize('create', Portfolio::class);
 
-        return view('portfolios.create', ['portfolio' => new Portfolio()]);
+    $template = $request->query('template', $request->old('selected_template'));
+
+    if (! in_array($template, Portfolio::TEMPLATES, true)) {
+        return redirect()->route('templates.index');
     }
+
+    return view('portfolios.create', ['portfolio' => new Portfolio()]);
+}
 
     // Saves a new portfolio, then sends the user to pick a template
-    public function store(StorePortfolioRequest $request): RedirectResponse
-    {
-        $portfolio = $this->portfolios->create(
-            $request->user(),
-            $request->validated(),
-            $request->file('profile_picture'),
-            $request->file('resume'),
-        );
+   // Saves a new portfolio with the template picked in step 1, then shows the success step
+public function store(StorePortfolioRequest $request): RedirectResponse
+{
+    $portfolio = $this->portfolios->create(
+        $request->user(),
+        $request->validated(),
+        $request->file('profile_picture'),
+        $request->file('resume'),
+    );
 
-        return redirect()
-            ->route('portfolios.template.edit', $portfolio)
-            ->with('status', 'Portfolio saved! Now choose a template.');
+    $template = $request->input('selected_template');
+
+    if (in_array($template, Portfolio::TEMPLATES, true)) {
+        $portfolio->update(['selected_template' => $template]);
     }
+
+    return redirect()
+        ->route('portfolios.show', $portfolio)
+        ->with('flow_complete', true);
+}
 
     // Preview page: renders the portfolio in its selected template
     public function show(Portfolio $portfolio): View

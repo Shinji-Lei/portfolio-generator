@@ -1,23 +1,76 @@
-{{-- Static information page (privacy, terms, docs, ...). Expects $page with title, intro, sections --}}
-<x-site-layout :title="$page['title']">
-    <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-sm font-medium text-indigo-400 hover:text-indigo-300">&larr; Back to home</a>
+{{-- Portfolio preview: action bar on top, selected template below. Expects $portfolio, $template, $isPreview --}}
+<x-site-layout :title="$portfolio->full_name">
 
-        <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">{{ $page['title'] }}</h1>
-        <p class="mt-4 text-lg leading-8 text-slate-300">{{ $page['intro'] }}</p>
+    {{-- Full-width top strip (extends up behind the navigation bar) filled with the gradient --}}
+    <div style="margin-top: -85px; padding-top: 95px;" class="w-full bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 pb-4 shadow-xl shadow-violet-900/30">
 
-        <div class="mt-12 space-y-8">
-            @foreach ($page['sections'] as $heading => $text)
-                {{-- Changed bg-white to bg-slate-900 and adjusted text colors for dark mode --}}
-                <section class="rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-sm sm:p-8">
-                    <h2 class="text-xl font-semibold text-white">{{ $heading }}</h2>
-                    <p class="mt-3 leading-7 text-slate-300">{{ $text }}</p>
-                </section>
-            @endforeach
+        {{-- Flash message / status notification styled like your buttons --}}
+        {{-- Keep the flash notification above the gradient strip --}}
+@push('head')
+    <style>
+        [role="status"] { position: relative; z-index: 30; }
+    </style>
+@endpush
+
+
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col gap-3 px-1 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center gap-3">
+                    <a href="{{ $isPreview ? route('portfolios.template.edit', $portfolio) : route('portfolios.index') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-white/80 transition hover:text-white">
+                        &larr; Back
+                    </a>
+                    <div class="h-3 w-[1px] bg-white/30"></div>
+                    <div class="flex items-center gap-2 text-xs">
+                        @if ($isPreview)
+                            <span class="font-medium text-amber-200">Preview Mode</span>
+                            <x-template-badge :template="$template" />
+                        @else
+                            <span class="text-white/80">Active Template:</span> <x-template-badge :template="$template" />
+                        @endif
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    @if ($isPreview)
+                        {{-- Save the previewed template as the portfolio's choice --}}
+                        <form method="POST" action="{{ route('portfolios.template.update', $portfolio) }}">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="selected_template" value="{{ $template }}">
+                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-500">Apply Template</button>
+                        </form>
+                    @else
+                        {{-- Edit button: frosted white so it stands out on the gradient --}}
+                        <a href="{{ route('portfolios.edit', $portfolio) }}" class="inline-flex items-center gap-1.5 rounded-xl border border-white/30 bg-white/15 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/30">
+                            <x-icon name="pencil" class="h-3.5 w-3.5" /> Edit
+                        </a>
+
+                        {{-- Change Template button: green tint --}}
+                        <a href="{{ route('portfolios.template.edit', $portfolio) }}" class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200/40 bg-emerald-500/30 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-500/50">
+                            <x-icon name="layout" class="h-3.5 w-3.5" /> Change Template
+                        </a>
+
+                        {{-- Delete button: red tint --}}
+                        <form method="POST" action="{{ route('portfolios.destroy', $portfolio) }}" onsubmit="return confirm('Delete this portfolio? This cannot be undone.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-xl border border-rose-200/40 bg-rose-500/30 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-rose-500/60">
+                                <x-icon name="trash" class="h-3.5 w-3.5" /> Delete
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
         </div>
 
-        <div class="mt-12 rounded-3xl bg-indigo-950 p-6 text-sm text-indigo-200 sm:p-8 border border-indigo-900">
-            Questions? Email us at <a href="mailto:{{ config('site.email') }}" class="font-semibold underline">{{ config('site.email') }}</a>.
-        </div>
-    </article>
+        {{-- Progress steps: while previewing, step 3 is current. Right after saving (a status message exists), all three steps show as success. --}}
+        @if ($isPreview || session('status'))
+            <div class="mx-auto max-w-6xl px-4 pt-1 sm:px-6 lg:px-8">
+                <x-steps :current="$isPreview ? 3 : 4" variant="gradient" compact />
+            </div>
+        @endif
+    </div>
+
+    {{-- The chosen template renders the saved data --}}
+    @include('templates.' . $template, ['portfolio' => $portfolio])
 </x-site-layout>

@@ -19,15 +19,6 @@
             .sel-title { color: #ffffff; }
             .sel-lead  { color: #cbd5e1; }
 
-            /* Progress steps */
-            .sel-step-done   { color: #6ee7b7; }
-            .sel-step-done span   { background: rgba(16, 185, 129, 0.2); }
-            .sel-step-active { color: #c7d2fe; }
-            .sel-step-active span { background: linear-gradient(90deg, #4f46e5, #7c3aed); color: #ffffff; }
-            .sel-step-next   { color: #94a3b8; }
-            .sel-step-next span   { background: rgba(255, 255, 255, 0.09); }
-            .sel-line { background: rgba(255, 255, 255, 0.22); }
-
             /* Error message */
             .sel-alert {
                 background: rgba(244, 63, 94, 0.12);
@@ -89,15 +80,6 @@
     @endpush
 
     <section class="sel-page mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-
-        {{-- Progress steps --}}
-        <ol class="mx-auto mb-10 flex max-w-xl items-center justify-center gap-2 text-sm font-medium" aria-label="Progress">
-            <li class="sel-step-done flex items-center gap-2"><span class="flex h-7 w-7 items-center justify-center rounded-full">1</span> Information</li>
-            <li class="sel-line h-px w-8"></li>
-            <li class="sel-step-active flex items-center gap-2"><span class="flex h-7 w-7 items-center justify-center rounded-full">2</span> Template</li>
-            <li class="sel-line h-px w-8"></li>
-            <li class="sel-step-next flex items-center gap-2"><span class="flex h-7 w-7 items-center justify-center rounded-full">3</span> Preview</li>
-        </ol>
 
         <div class="text-center">
             <h1 class="sel-title text-3xl font-bold tracking-tight">Choose a template for {{ $portfolio->full_name }}</h1>

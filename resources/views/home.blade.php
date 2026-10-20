@@ -8,19 +8,31 @@
             html body.bg-slate-50 { background-color: #03050b; }
 
             /* 3D scene sits at the top of the page and scrolls away with the content */
-            .home-spline-bg {
-                position: absolute;      /* was: fixed */
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                height: 100dvh;
-                z-index: -1;
-                pointer-events: none;    /* never blocks clicks, links, or scrolling */
-                /* soft fade so the scene melts into the dark background below it */
-                -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
-                mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
-            }
+            
+.home-spline-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: block;
+    z-index: -1;
+    pointer-events: none;
+
+    -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 82%, transparent 100%);
+}
+
+/* Mobile background */
+@media (max-width: 639px) {
+    .home-spline-bg {
+        height: 100svh;
+        min-height: 650px;
+        -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+        mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+    }
+}
 
             /* Hero: the heading and paragraph are drawn inside the Spline scene.
                This block only holds the two buttons, placed under that paragraph. */

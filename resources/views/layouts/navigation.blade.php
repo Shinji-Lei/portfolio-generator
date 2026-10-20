@@ -1,4 +1,42 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<style>
+   .nav-dark {
+    position: relative;
+    z-index: 50;
+    background: rgba(10, 11, 20, 0.60);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+    .nav-dark .nav-logo { filter: brightness(0) invert(1); }
+
+    .nav-dark .text-gray-800,
+    .nav-dark .text-gray-900 { color: #f3f4f6; }
+    .nav-dark .text-gray-700,
+    .nav-dark .text-gray-600 { color: #d1d5db; }
+    .nav-dark .text-gray-500,
+    .nav-dark .text-gray-400 { color: #9ca3af; }
+    .nav-dark .hover\:text-gray-700:hover,
+    .nav-dark .hover\:text-gray-500:hover { color: #fff; }
+
+    /* dropdown panel */
+    .nav-dark .ring-1 {
+        background: rgba(18, 19, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 12px;
+    }
+    .nav-dark a:hover,
+    .nav-dark a:focus,
+    .nav-dark button:hover,
+    .nav-dark button:focus { background-color: rgba(255, 255, 255, 0.08); }
+
+    /* mobile menu */
+    .nav-dark .border-gray-200,
+    .nav-dark .border-gray-100 { border-color: rgba(255, 255, 255, 0.10); }
+    .nav-dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.15); }
+    .nav-dark .text-indigo-700 { color: #a5b4fc; }
+</style>
+
+<nav x-data="{ open: false }" class="nav-dark">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -6,7 +44,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <x-application-logo class="nav-logo block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
 
@@ -22,7 +60,7 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">

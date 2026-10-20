@@ -7,7 +7,7 @@
             </p>
             <div class="flex gap-2">
                 <a href="{{ route('templates.index') }}" class="rounded-xl border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-100">All templates</a>
-                <a href="{{ route('portfolios.create') }}" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700">Create my portfolio</a>
+                <a href="{{ route('portfolios.create', ['template' => $template]) }}" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700">Select this template</a>
             </div>
         </div>
     </div>

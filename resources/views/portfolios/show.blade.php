@@ -12,6 +12,12 @@
     </style>
 @endpush
 
+        {{-- Success step: only shown once, right after creating a portfolio --}}
+        @if (session('flow_complete'))
+            <div class="mx-auto max-w-6xl px-4 pb-1 pt-3 sm:px-6 lg:px-8">
+                <x-steps :current="4" variant="gradient" compact />
+            </div>
+        @endif
 
         <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 px-1 py-3.5 sm:flex-row sm:items-center sm:justify-between">
