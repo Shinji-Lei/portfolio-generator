@@ -21,8 +21,8 @@
     $links       = $portfolio->socialLinks;
 @endphp
 
-<form method="POST" action="{{ $action }}" enctype="multipart/form-data" novalidate
-      x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
+<form id="portfolio-form" method="POST" action="{{ $action }}" enctype="multipart/form-data" novalidate
+      x-data="{ loading: false }" @submit="loading = true; window.portfolioAllowLeave = true" class="space-y-6">
     @csrf
     @if ($method !== 'POST') @method($method) @endif
 
@@ -168,7 +168,7 @@
 
     {{-- Form buttons --}}
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <button type="button" @click="if (confirm('Reset the form and discard your changes?')) window.location.href = @js($resetUrl)"
+        <button type="button" @click="if (confirm('Reset the form and discard your changes?')) { window.portfolioAllowLeave = true; window.location.href = @js($resetUrl) }"
                 class="rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
             Reset Form
         </button>
@@ -218,6 +218,54 @@
 
         nameInput.addEventListener('input', clean);
         clean();
+    });
+
+    // ---------- Unsaved changes guard ----------
+    window.portfolioAllowLeave = false;
+
+    window.addEventListener('load', () => {
+        const form = document.getElementById('portfolio-form');
+        if (!form) return;
+
+        // Compare the current form data against a snapshot taken after Alpine has rendered.
+        // This also catches Alpine-only changes (adding/removing rows or skills).
+        const serialize = () => JSON.stringify(
+            [...new FormData(form)]
+                .filter(([key]) => key !== '_token')
+                .map(([key, value]) => [key, value instanceof File ? value.name + value.size : value])
+        );
+
+        let initial = null;
+        setTimeout(() => { initial = serialize(); }, 0);
+
+        const isDirty = () => initial !== null && serialize() !== initial;
+
+        // Refresh, close tab, or clicking any link that leaves the page
+        window.addEventListener('beforeunload', (e) => {
+            if (window.portfolioAllowLeave || !isDirty()) return;
+            e.preventDefault();
+            e.returnValue = '';
+        });
+
+        // Browser back button
+        const guardState = { portfolioGuard: true };
+        if (!history.state || !history.state.portfolioGuard) {
+            history.pushState(guardState, '', location.href);
+        }
+
+        window.addEventListener('popstate', () => {
+            if (window.portfolioAllowLeave || !isDirty()) {
+                history.back();
+                return;
+            }
+
+            if (confirm('Are you sure you want to go back? Your changes may be lost.')) {
+                window.portfolioAllowLeave = true;
+                history.back();
+            } else {
+                history.pushState(guardState, '', location.href); // stay on the page
+            }
+        });
     });
 </script>
 @endpush
